@@ -1,1 +1,17 @@
-{}
+{
+    "sprites": {},
+    "init": {
+        "categories": {
+            "projectInfo": {
+                "title": "The following questions will be about your project's information",
+                "questions": [
+                    {
+                        "title": "Project Name",
+                        "type": "text",
+                        "var": "projectName"
+                    }
+                ]
+            }
+        }
+    }
+}
