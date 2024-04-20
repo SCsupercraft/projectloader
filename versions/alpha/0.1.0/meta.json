@@ -9,9 +9,22 @@
                         "title": "Project Name",
                         "type": "text",
                         "var": "projectName"
+                    },
+                    {
+                        "title": "Project Author",
+                        "type": "text",
+                        "var": "projectAuthor"
                     }
                 ]
             }
-        }
+        },
+        "questions": [
+            {
+                "title": "Update Link",
+                "type": "text",
+                "var": "updateLink"
+            }
+        ],
+        "order": ["categories/projectInfo","questions"]
     }
 }
