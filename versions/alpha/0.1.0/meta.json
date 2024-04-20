@@ -3,6 +3,7 @@
     "init": {
         "categories": {
             "projectInfo": {
+                "name": "project information",
                 "title": "The following questions will be about your project's information",
                 "questions": [
                     {
@@ -24,7 +25,6 @@
                 "type": "text",
                 "var": "updateLink"
             }
-        ],
-        "order": ["categories/projectInfo","questions"]
+        ]
     }
 }
