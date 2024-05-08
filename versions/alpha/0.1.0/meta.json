@@ -29,6 +29,11 @@
                 "title": "Update Link",
                 "type": "text",
                 "var": "updateLink"
+            },
+            {
+                "title": "Are Updates Mandatory",
+                "type": "text",
+                "var": "updateMandatory"
             }
         ]
     }
