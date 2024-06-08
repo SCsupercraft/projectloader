@@ -1,4 +1,5 @@
 {
+    "supportedInstallers":["0.1.0-alpha"],
     "sprites": [
         "Setup",
         "Options",
