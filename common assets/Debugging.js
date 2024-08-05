@@ -32,6 +32,9 @@ Contributors / Helpers
     const ArgumentType = Scratch.ArgumentType
     const Cast = Scratch.Cast
 
+    const menuIconURI = "data:image/svg+xml;base64,PHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHdpZHRoPSIxNjkuNzM5NDciIGhlaWdodD0iMTY5LjczOTQ3IiB2aWV3Qm94PSIwLDAsMTY5LjczOTQ3LDE2OS43Mzk0NyI+PGcgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoLTE1NS4xMzAyNiwtOTUuMTMwMjYpIj48ZyBkYXRhLXBhcGVyLWRhdGE9InsmcXVvdDtpc1BhaW50aW5nTGF5ZXImcXVvdDs6dHJ1ZX0iIHN0cm9rZS1kYXNoYXJyYXk9IiIgc3Ryb2tlLWRhc2hvZmZzZXQ9IjAiIHN0eWxlPSJtaXgtYmxlbmQtbW9kZTogbm9ybWFsIj48cGF0aCBkPSJNMzA2LjQ1NjI2LDEwOC4wMDU3NWM5LjIwNDI1LDAgMTYuNjE0MDgsNy40MDk4MSAxNi42MTQwOCwxNi42MTQwN3YxMTAuNzYwNDhjMCw5LjIwNDI1IC03LjQwOTgyLDE2LjYxNDA3IC0xNi42MTQwOCwxNi42MTQwN2gtMTMyLjkxMjQ5Yy05LjIwNDI1LDAgLTE2LjYxNDA3LC03LjQwOTgyIC0xNi42MTQwNywtMTYuNjE0MDd2LTExMC43NjA0OGMwLC05LjIwNDI2IDcuNDA5ODIsLTE2LjYxNDA3IDE2LjYxNDA3LC0xNi42MTQwN3pNMTY4LjAwNTc1LDEyNC42MTk3OHYxMTAuNzYwNDhjLTAuMDAyOTgsMS40Njk2NSAwLjU3OTU5LDIuODc5OTYgMS42MTg4MSwzLjkxOTE3YzEuMDM5MjIsMS4wMzkyMiAyLjQ0OTUyLDEuNjIxNzkgMy45MTkxNywxLjYxODgxaDEzMi45MTI1YzMuMDY4MDMsMCA1LjUzODA2LC0yLjQ2OTk1IDUuNTM4MDYsLTUuNTM4MDZ2LTExMC43NjA0OGMwLC0zLjA2ODAzIC0yLjQ2OTk1LC01LjUzODA3IC01LjUzODA2LC01LjUzODA3aC0xMzIuOTEyNWMtMy4wNjgwMywwIC01LjUzODA2LDIuNDY5OTUgLTUuNTM4MDYsNS41MzgwN3oiIGZpbGw9IiM1NzVlNzUiIGZpbGwtcnVsZT0iZXZlbm9kZCIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjEiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIgc3Ryb2tlLW1pdGVybGltaXQ9IjQiLz48cGF0aCBkPSJNMTg5LjIzODU2LDE1Mi4zMDk5NGw0MS41MzUxOCwyNy42OTAwOGwtNDEuNTM1MTgsMjcuNjkwMDhNMjQ0LjYxODc2LDIwNy42OTAxOGg0Ni4xNDI3OSIgZmlsbD0ibm9uZSIgZmlsbC1ydWxlPSJldmVub2RkIiBzdHJva2U9IiM4ZjhmOGYiIHN0cm9rZS13aWR0aD0iNyIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBzdHJva2UtbWl0ZXJsaW1pdD0iNCIvPjxwYXRoIGQ9Ik0xNTUuMTMwMjYsMjY0Ljg2OTc0di0xNjkuNzM5NDdoMTY5LjczOTQ3djE2OS43Mzk0N3oiIGZpbGw9Im5vbmUiIGZpbGwtcnVsZT0ibm9uemVybyIgc3Ryb2tlPSJub25lIiBzdHJva2Utd2lkdGg9IjAiIHN0cm9rZS1saW5lY2FwPSJidXR0IiBzdHJva2UtbGluZWpvaW49Im1pdGVyIiBzdHJva2UtbWl0ZXJsaW1pdD0iMTAiLz48L2c+PC9nPjwvc3ZnPjwhLS1yb3RhdGlvbkNlbnRlcjo4NC44Njk3MzcwNjE0OTE5Nzo4NC44Njk3MzcwNjE0OTIxLS0+";
+    const buttonSRC = "https://raw.githubusercontent.com/SCsupercraft/projectloader/main/common%20assets/debugger%20icon.svg";
+
     function xmlEscape (unsafe) {
         if (typeof unsafe !== 'string') {
             if (Array.isArray(unsafe)) {
@@ -177,6 +180,9 @@ Contributors / Helpers
             this.runtime = runtime;
             this.vm = vm
 
+            this.version = '1.1.0'
+            this.debuggerShown = false;
+
             this.CommandDescriptions = DefaultCommandDescriptions
             this.disabledCommands = [];
             this.protectedVariables = [];
@@ -216,7 +222,7 @@ Contributors / Helpers
                 + 'display: flex; flex-direction: column; align-items: center;'
                 + 'justify-content: center; color: white; cursor: move;'
                 + 'background: #333333; z-index: 1000001; user-select: none;';
-            this.consoleHeader.innerHTML = '<p>Debugger</p>';
+            this.consoleHeader.innerHTML = `<p>Debugger - Version ${this.version}</p>`;
 
             this.consoleLogs = this.console.appendChild(document.createElement("div"));
             this.consoleLogs.style = 'width: 100%; height: calc(100% - 3rem);'
@@ -372,7 +378,14 @@ Contributors / Helpers
             this.buttons = {};
             this.controlBar[0].before(document.createElement('span'));
             this._updateButtons();
-            this.newBtnUrl({"NAME":"Open debugger","HOVER":"Opens the debugger","URL":"https://raw.githubusercontent.com/SCsupercraft/projectloader/main/common%20assets/debugger%20icon.svg"})
+            this.newBtnUrl({"NAME":"Open debugger","HOVER":"Opens the debugger","URL":buttonSRC})
+
+            const logElement = document.createElement('div');
+            let message = `<h1>Debugger</h1><h3>Version ${this.version}</h3><br>Originally by JeremyGamer13 and continued by SCsupercraft.<br><br> <p>Use the help command for information on how to use the debugger.<p><br>`;
+            let inner = `<div style="display: flex; justify-content: space-between; direction: ltr;"><span style="flex-grow: 1; text-align: left;">${message}</span></div>`;
+            logElement.innerHTML = inner;
+
+            this.consoleLogs.appendChild(logElement);
         }
 
         isPackaged() {
@@ -388,6 +401,7 @@ Contributors / Helpers
                 name: 'Debugger',
                 color1: '#878787',
                 color2: '#757575',
+                menuIconURI: menuIconURI,
                 blocks: [
                     {
                         opcode: 'openDebugger',
@@ -398,6 +412,32 @@ Contributors / Helpers
                         opcode: 'closeDebugger',
                         text: 'close debugger',
                         blockType: BlockType.COMMAND
+                    },
+                    {
+                        opcode: 'isDebuggerShown',
+                        text: 'is debugger shown?',
+                        blockType: BlockType.BOOLEAN
+                    },
+                    {
+                        opcode: 'debuggerVersion',
+                        text: 'version',
+                        blockType: BlockType.REPORTER
+                    },
+                    "---",
+                    {
+                        opcode: 'sendInput',
+                        text: 'send [COMMAND] to debugger and [LOG]',
+                        blockType: BlockType.COMMAND,
+                        arguments: {
+                            COMMAND: {
+                              type: ArgumentType.STRING,
+                              defaultValue: 'getVar \"my variable\"'
+                            },
+                            LOG: {
+                                type: ArgumentType.STRING,
+                                menu: 'LOG'
+                            }
+                        }
                     },
                     {
                         text: 'Logging',
@@ -463,6 +503,12 @@ Contributors / Helpers
                             }
                         }
                     },
+                    "---",
+                    {
+                        opcode: 'logStage',
+                        text: 'log stage',
+                        blockType: BlockType.COMMAND
+                    },
                     {
                         text: 'Markers',
                         blockType: BlockType.LABEL
@@ -486,6 +532,54 @@ Contributors / Helpers
                             POINT: {
                                 type: ArgumentType.NUMBER,
                                 defaultValue: 1
+                            }
+                        }
+                    },
+                    {
+                        text: 'Tests',
+                        blockType: BlockType.LABEL
+                    },
+                    {
+                        opcode: 'test',
+                        text: 'run test [TEST] called [TEST_NAME]',
+                        blockType: BlockType.COMMAND,
+                        arguments: {
+                            TEST: {
+                                type: ArgumentType.BOOLEAN
+                            },
+                            TEST_NAME: {
+                                type: ArgumentType.STRING,
+                                defaultValue: 'Test Name'
+                            }
+                        }
+                    },
+                    {
+                        opcode: 'testAndIf',
+                        text: ["run test [TEST] called [TEST_NAME] and if test succeeded", "else"],
+                        blockType: Scratch.BlockType.CONDITIONAL,
+                        branchCount: 2,
+                        arguments: {
+                            TEST: {
+                                type: ArgumentType.BOOLEAN
+                            },
+                            TEST_NAME: {
+                                type: ArgumentType.STRING,
+                                defaultValue: 'Test Name'
+                            }
+                        }
+                    },
+                    "---",
+                    {
+                        opcode: 'testAndReturn',
+                        text: 'run test [TEST] called [TEST_NAME]',
+                        blockType: BlockType.BOOLEAN,
+                        arguments: {
+                            TEST: {
+                                type: ArgumentType.BOOLEAN
+                            },
+                            TEST_NAME: {
+                                type: ArgumentType.STRING,
+                                defaultValue: 'Test Name'
                             }
                         }
                     },
@@ -630,6 +724,19 @@ Contributors / Helpers
                             "List",
                             "Sprite"
                         ]
+                    },
+                    LOG: {
+                        acceptReporters: false,
+                        items: [
+                            {
+                                text: "log",
+                                value: "true"
+                            },
+                            {
+                                text: "don't log",
+                                value: "false"
+                            }
+                        ]
                     }
                 }
             };
@@ -690,6 +797,21 @@ Contributors / Helpers
             logElement.innerHTML = xmlEscape(log);
             if (canScroll) {
                 this.consoleLogs.scrollBy(0, 1000000);
+            }
+        }
+        _addImgLog(imageSRC, style) {
+            const canScroll = this.can_scroll()
+            console.log(canScroll);
+            const imageElement = this.consoleLogs.appendChild(document.createElement("img"));
+            imageElement.src = imageSRC;
+            if (style) {
+                imageElement.style = style;
+            }
+            if (canScroll) {
+                // Without the timeout it will scroll down before the image is loaded
+                setTimeout(function () {
+                    this.consoleLogs.scrollBy(0, 1000000);
+                }.bind(this), 1)
             }
         }
         _parseCommand(command) {
@@ -1278,9 +1400,37 @@ Contributors / Helpers
 
         openDebugger() {
             this.console.style.display = '';
+            this.debuggerShown = true;
         }
         closeDebugger() {
             this.console.style.display = 'none';
+            this.debuggerShown = false;
+        }
+
+        isDebuggerShown() {
+            return this.debuggerShown;
+        }
+        debuggerVersion() {
+            return this.version;
+        }
+
+        sendInput(args) {
+            const command = Cast.toString(args.COMMAND)
+            const addLog = Cast.toString(args.LOG)
+            if (addLog.toLowerCase() === 'true') {
+                this._addLog(`PROJECT > ${command}`, "opacity: 0.7;");
+                this.logFile += `PROJECT > ${command}` + "\n";
+                this.debugFile += `PROJECT > ${command}` + "\n";
+            }
+            let parsed = {};
+            try {
+                parsed = this._parseCommand(command);
+            } catch (err) {
+                this._addLog(`${err}`, "color: red;");
+                return;
+            }
+            console.log(parsed);
+            (async (THIS, parsed) => await THIS._runCommand(parsed))(this, parsed);
         }
 
         debug(args) {
@@ -1384,23 +1534,60 @@ Contributors / Helpers
             this.runtime.pause()
         }
 
-        setHelp(args) {
-            this.CommandDescriptions[Cast.toString(args.COMMAND)] = Cast.toString(args.EXPLANATION);
-        }
-        removeHelp(args) {
-            delete this.CommandDescriptions[Cast.toString(args.COMMAND)];
+        logStage() {
+            new Promise((resolve) => {
+                vm.runtime.renderer.requestSnapshot((uri) => {
+                    resolve(uri);
+                });
+            }).then((base64ImageData) => {
+                this._addImgLog(base64ImageData, 'border-radius: 10px; width: 150px; margin: 10px;')
+            });
         }
 
-        setCommandEnabled(args) {
-            let commandEnabled = this.isCommandEnabled({COMMAND: args.COMMAND})
-            if (Cast.toString(args.ENABLED).toLowerCase() === "enable" && !commandEnabled) {
-                this.disabledCommands.splice(this.disabledCommands.indexOf(Cast.toString(args.COMMAND)), 1);
-            } else if (Cast.toString(args.ENABLED).toLowerCase() === "disable" && commandEnabled) {
-                this.disabledCommands.push(Cast.toString(args.COMMAND))
+        test({TEST,TEST_NAME}) {
+            if (TEST) {
+                this._addLog(`Test: ${TEST_NAME} succeeded`, "color: mediumseagreen;")
+            } else {
+                this._addLog(`Test: ${TEST_NAME} failed`, "color: crimson;")
             }
         }
-        isCommandEnabled(args) {
-            return !this.disabledCommands.includes(Cast.toString(args.COMMAND));
+
+        testAndReturn({TEST,TEST_NAME}) {
+            if (TEST) {
+                this._addLog(`Test: ${TEST_NAME} succeeded`, "color: mediumseagreen;")
+            } else {
+                this._addLog(`Test: ${TEST_NAME} failed`, "color: crimson;")
+            }
+            return TEST;
+        }
+
+        testAndIf({TEST,TEST_NAME}, util) {
+            if (TEST) {
+                this._addLog(`Test: ${TEST_NAME} succeeded`, "color: mediumseagreen;")
+                util.startBranch(1, false);
+            } else {
+                this._addLog(`Test: ${TEST_NAME} failed`, "color: crimson;")
+                util.startBranch(2, false);
+            }
+        }
+
+        setHelp({COMMAND, EXPLANATION}) {
+            this.CommandDescriptions[Cast.toString(COMMAND)] = Cast.toString(EXPLANATION);
+        }
+        removeHelp({COMMAND}) {
+            delete this.CommandDescriptions[Cast.toString(COMMAND)];
+        }
+
+        setCommandEnabled({COMMAND,ENABLED}) {
+            let commandEnabled = this.isCommandEnabled({COMMAND: COMMAND})
+            if (Cast.toString(ENABLED).toLowerCase() === "enable" && !commandEnabled) {
+                this.disabledCommands.splice(this.disabledCommands.indexOf(Cast.toString(COMMAND)), 1);
+            } else if (Cast.toString(ENABLED).toLowerCase() === "disable" && commandEnabled) {
+                this.disabledCommands.push(Cast.toString(COMMAND))
+            }
+        }
+        isCommandEnabled({COMMAND}) {
+            return !this.disabledCommands.includes(Cast.toString(COMMAND));
         }
 
         protect(args) {
