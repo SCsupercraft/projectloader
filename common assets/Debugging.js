@@ -566,6 +566,21 @@ Contributors / Helpers
                     },
                     {
                         opcode: 'testAndIf',
+                        text: "run test [TEST] called [TEST_NAME] and if test succeeded",
+                        blockType: Scratch.BlockType.CONDITIONAL,
+                        branchCount: 1,
+                        arguments: {
+                            TEST: {
+                                type: ArgumentType.BOOLEAN
+                            },
+                            TEST_NAME: {
+                                type: ArgumentType.STRING,
+                                defaultValue: 'Test Name'
+                            }
+                        }
+                    },
+                    {
+                        opcode: 'testAndIfElse',
                         text: ["run test [TEST] called [TEST_NAME] and if test succeeded", "else"],
                         blockType: Scratch.BlockType.CONDITIONAL,
                         branchCount: 2,
@@ -1577,6 +1592,15 @@ Contributors / Helpers
         }
 
         testAndIf({TEST,TEST_NAME}, util) {
+            if (TEST) {
+                this._addLog(`Test: ${TEST_NAME} succeeded`, "color: mediumseagreen;")
+                util.startBranch(1, false);
+            } else {
+                this._addLog(`Test: ${TEST_NAME} failed`, "color: crimson;")
+            }
+        }
+
+        testAndIfElse({TEST,TEST_NAME}, util) {
             if (TEST) {
                 this._addLog(`Test: ${TEST_NAME} succeeded`, "color: mediumseagreen;")
                 util.startBranch(1, false);
