@@ -188,6 +188,7 @@ Contributors / Helpers
             this.protectedVariables = [];
             this.protectedLists = [];
             this.protectedSprites = [];
+            this.protectedBroadcasts = [];
 
             this.logFile = "";
             this.debugFile = "";
@@ -748,7 +749,8 @@ Contributors / Helpers
                         items: [
                             "Variable",
                             "List",
-                            "Sprite"
+                            "Sprite",
+                            "Broadcast"
                         ]
                     },
                     LOG: {
@@ -1075,6 +1077,12 @@ Contributors / Helpers
                         if (!broadcast) {
                             throw new SyntaxError("No broadcast specified");
                         }
+                        if (this.isProtected({VARIABLE: args[0],PROTECTION_TYPE: "Broadcast"})) {
+                            this._addLog("This broadcast is protected!", "color: yellow;");
+                            this.logFile += "WARN This broadcast is protected!" + "\n";
+                            this.debugFile += "WARN This broadcast is protected!" + "\n";
+                            break;
+                        }
                         const data = Scratch.Cast.toString(args[1]);
                         this._broadcast(broadcast, '_all_', data)
                         console.log('Broadcasted ' + broadcast + ' successfully');
@@ -1351,13 +1359,13 @@ Contributors / Helpers
             return commandArguments ? JSON.stringify(commandArguments) : JSON.stringify([]);
         }
 
-        whenCommandEntered(args, util) {
+        whenCommandEntered({COMMAND}, util) {
             if (!util.thread.commandData) {
                 thread._resolve();
                 return true
             }
             const thread = util.thread;
-            if (thread.commandData && thread.commandData.COMMAND !== args.COMMAND) {
+            if (thread.commandData && thread.commandData.COMMAND !== COMMAND) {
               thread._reject();
               return false;
             }
@@ -1392,16 +1400,16 @@ Contributors / Helpers
             };
         }
 
-        marker(args, util) {
+        marker({MARK}, util) {
             const thread = util.thread
             if (thread.marker) throw new Error("Thread has already been marked!")
-            thread.marker = Scratch.Cast.toString(args.MARK);
+            thread.marker = Scratch.Cast.toString(MARK);
         }
 
-        pointer(args, util) {
+        pointer({POINT}, util) {
             const thread = util.thread
             if (!thread.marker) throw new Error("Thread needs to be marked before a pointer can be created.")
-            thread.pointer = Scratch.Cast.toNumber(args.POINT);
+            thread.pointer = Scratch.Cast.toNumber(POINT);
         }
 
         clear() {
@@ -1440,9 +1448,9 @@ Contributors / Helpers
             return this.version;
         }
 
-        sendInput(args) {
-            const command = Cast.toString(args.COMMAND)
-            const addLog = Cast.toString(args.LOG)
+        sendInput({COMMAND, LOG}) {
+            const command = Cast.toString(COMMAND)
+            const addLog = Cast.toString(LOG)
             if (addLog.toLowerCase() === 'true') {
                 this._addLog(`PROJECT > ${command}`, "opacity: 0.7;");
                 this.logFile += `PROJECT > ${command}` + "\n";
@@ -1459,27 +1467,27 @@ Contributors / Helpers
             (async (THIS, parsed) => await THIS._runCommand(parsed))(this, parsed);
         }
 
-        debug(args) {
-            const text = Cast.toString(args.INFO);
+        debug({INFO}) {
+            const text = Cast.toString(INFO);
             console.log(text);
             this._addLog(text, "color: dodgerblue;", true);
             this.debugFile += "DEBUG " + text + "\n";
         }
-        log(args) {
-            const text = Cast.toString(args.INFO);
+        log({INFO}) {
+            const text = Cast.toString(INFO);
             console.log(text);
             this._addLog(text);
             this.logFile += "INFO " + text + "\n";
             this.debugFile += "INFO " + text + "\n";
         }
-        warn(args) {
-            const text = Cast.toString(args.INFO);
+        warn({INFO}) {
+            const text = Cast.toString(INFO);
             console.warn(text);
             this._addLog(text, "color: yellow;");
             this.logFile += "WARN " + text + "\n";
             this.debugFile += "WARN " + text + "\n";
         }
-        error(args, util) {
+        error({INFO}, util) {
             // create error stack
             const stack = [];
             const target = util.target;
@@ -1508,7 +1516,7 @@ Contributors / Helpers
                 stack.push(`point ${thread.pointer}`);
             }
 
-            const text = `Error: ${Cast.toString(args.INFO)}`
+            const text = `Error: ${Cast.toString(INFO)}`
                 + `\n${stack.map(text => (`\tat ${text}`)).join("\n")}`;
             console.error(text);
             this._addLog(text, "color: red;");
@@ -1516,7 +1524,7 @@ Contributors / Helpers
             this.debugFile += "ERROR " + text + "\n";
         }
 
-        fatalError(args, util) {
+        fatalError({INFO}, util) {
             // create error stack
             const stack = [];
             const target = util.target;
@@ -1545,7 +1553,7 @@ Contributors / Helpers
                 stack.push(`point ${thread.pointer}`);
             }
 
-            const text = `Fatal Error: ${Cast.toString(args.INFO)}`
+            const text = `Fatal Error: ${Cast.toString(INFO)}`
                 + `\n${stack.map(text => (`\tat ${text}`)).join("\n")}`;
             console.error(text);
             this._addLog(text, "color: red;");
@@ -1629,61 +1637,67 @@ Contributors / Helpers
             return !this.disabledCommands.includes(Cast.toString(COMMAND));
         }
 
-        protect(args) {
-            let variableProtected = this.isProtected({VARIABLE: args.VARIABLE, PROTECTION_TYPE: args.PROTECTION_TYPE})
+        protect({PROTECTION_TYPE,VARIABLE}) {
+            let variableProtected = this.isProtected({VARIABLE: VARIABLE, PROTECTION_TYPE: PROTECTION_TYPE})
             if (!variableProtected) {
-                if (args.PROTECTION_TYPE === "Variable") {
+                if (PROTECTION_TYPE === "Variable") {
                     let target = runtime.getTargetForStage()
                     const variable = target.lookupVariableByNameAndType(
-                        Scratch.Cast.toString(args.VARIABLE),
+                        Scratch.Cast.toString(VARIABLE),
                         ""
                     );
                     if (!variable) {
-                        throw new ReferenceError("Variable \"" + args.VARIABLE + "\" is not defined")
+                        throw new ReferenceError("Variable \"" + VARIABLE + "\" is not defined")
                     }
-                    this.protectedVariables.push(Cast.toString(args.VARIABLE))
-                } else if (args.PROTECTION_TYPE === "List") {
+                    this.protectedVariables.push(Cast.toString(VARIABLE))
+                } else if (PROTECTION_TYPE === "List") {
                     let target = runtime.getTargetForStage()
                     const variable = target.lookupVariableByNameAndType(
-                        Scratch.Cast.toString(args.VARIABLE),
+                        Scratch.Cast.toString(VARIABLE),
                         "list"
                     );
                     if (!variable) {
-                        throw new ReferenceError("List \"" + args.VARIABLE + "\" is not defined")
+                        throw new ReferenceError("List \"" + VARIABLE + "\" is not defined")
                     }
-                    this.protectedLists.push(Cast.toString(args.VARIABLE))
-                } else if (args.PROTECTION_TYPE === "Sprite") {
-                    let target = runtime.getSpriteTargetByName(Cast.toString(args.VARIABLE));
+                    this.protectedLists.push(Cast.toString(VARIABLE))
+                } else if (PROTECTION_TYPE === "Sprite") {
+                    let target = runtime.getSpriteTargetByName(Cast.toString(VARIABLE));
                     if (!target) {
-                        throw new ReferenceError("Sprite \"" + args.VARIABLE + "\" is not defined")
+                        throw new ReferenceError("Sprite \"" + VARIABLE + "\" is not defined")
                     }
-                    this.protectedSprites.push(Cast.toString(args.VARIABLE))
+                    this.protectedSprites.push(Cast.toString(VARIABLE))
+                } else if (PROTECTION_TYPE === "Broadcast") {
+                    this.protectedBroadcasts.push(Cast.toString(VARIABLE))
                 } else {
                     throw new Error("Invalid PROTECTION_TYPE");
                 }
             }
         }
-        unprotect(args) {
-            let variableProtected = this.isProtected({VARIABLE: args.VARIABLE, PROTECTION_TYPE: args.PROTECTION_TYPE})
+        unprotect({PROTECTION_TYPE,VARIABLE}) {
+            let variableProtected = this.isProtected({VARIABLE: VARIABLE, PROTECTION_TYPE: PROTECTION_TYPE})
             if (variableProtected) {
-                if (args.PROTECTION_TYPE === "Variable") {
-                    this.protectedVariables.splice(this.protectedVariables.indexOf(Cast.toString(args.VARIABLE)), 1);
-                } else if (args.PROTECTION_TYPE === "List") {
-                    this.protectedLists.splice(this.protectedLists.indexOf(Cast.toString(args.VARIABLE)), 1);
-                } else if (args.PROTECTION_TYPE === "Sprite") {
-                    this.protectedSprites.splice(this.protectedSprites.indexOf(Cast.toString(args.VARIABLE)), 1);
+                if (PROTECTION_TYPE === "Variable") {
+                    this.protectedVariables.splice(this.protectedVariables.indexOf(Cast.toString(VARIABLE)), 1);
+                } else if (PROTECTION_TYPE === "List") {
+                    this.protectedLists.splice(this.protectedLists.indexOf(Cast.toString(VARIABLE)), 1);
+                } else if (PROTECTION_TYPE === "Sprite") {
+                    this.protectedSprites.splice(this.protectedSprites.indexOf(Cast.toString(VARIABLE)), 1);
+                } else if (PROTECTION_TYPE === "Broadcast") {
+                    this.protectedBroadcasts.splice(this.protectedBroadcasts.indexOf(Cast.toString(VARIABLE)), 1);
                 } else {
                     throw new Error("Invalid PROTECTION_TYPE");
                 }
             }
         }
-        isProtected(args) {
-            if (args.PROTECTION_TYPE === "Variable") {
-                return this.protectedVariables.includes(Cast.toString(args.VARIABLE));
-            } else if (args.PROTECTION_TYPE === "List") {
-                return this.protectedLists.includes(Cast.toString(args.VARIABLE));
-            } else if (args.PROTECTION_TYPE === "Sprite") {
-                return this.protectedSprites.includes(Cast.toString(args.VARIABLE));
+        isProtected({PROTECTION_TYPE,VARIABLE}) {
+            if (PROTECTION_TYPE === "Variable") {
+                return this.protectedVariables.includes(Cast.toString(VARIABLE));
+            } else if (PROTECTION_TYPE === "List") {
+                return this.protectedLists.includes(Cast.toString(VARIABLE));
+            } else if (PROTECTION_TYPE === "Sprite") {
+                return this.protectedSprites.includes(Cast.toString(VARIABLE));
+            } else if (PROTECTION_TYPE === "Broadcast") {
+                return this.protectedBroadcasts.includes(Cast.toString(VARIABLE));
             } else {
                 throw new Error("Invalid PROTECTION_TYPE");
             }
