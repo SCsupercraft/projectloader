@@ -180,7 +180,7 @@ Contributors / Helpers
             this.runtime = runtime;
             this.vm = vm
 
-            this.version = '1.1.0'
+            this.version = '1.2.0'
             this.debuggerShown = false;
 
             this.CommandDescriptions = DefaultCommandDescriptions
@@ -508,6 +508,17 @@ Contributors / Helpers
                         opcode: 'logStage',
                         text: 'log stage',
                         blockType: BlockType.COMMAND
+                    },
+                    {
+                        opcode: 'logImage',
+                        text: 'log image [IMAGE]',
+                        blockType: BlockType.COMMAND,
+                        arguments: {
+                            IMAGE: {
+                                type: ArgumentType.STRING,
+                                defaultValue: "Insert URL or Data URI here"
+                            }
+                        }
                     },
                     {
                         text: 'Markers',
@@ -1542,6 +1553,10 @@ Contributors / Helpers
             }).then((base64ImageData) => {
                 this._addImgLog(base64ImageData, 'border-radius: 10px; width: 150px; margin: 10px;')
             });
+        }
+        logImage({IMAGE}) {
+            const image = Cast.toString(IMAGE);
+            this._addImgLog(image, 'border-radius: 10px; width: 150px; margin: 10px;')
         }
 
         test({TEST,TEST_NAME}) {
