@@ -382,7 +382,7 @@ Contributors / Helpers
             this.newBtnUrl({"NAME":"Open debugger","HOVER":"Opens the debugger","URL":buttonSRC})
 
             const logElement = document.createElement('div');
-            let message = `<h1>Debugger</h1><h3>Version ${this.version}</h3><br>Originally by JeremyGamer13 and continued by SCsupercraft.<br><br> <p>Use the help command for information on how to use the debugger.<p><br>`;
+            let message = `<h1>Debugger</h1><h3>Version ${this.version}</h3><br>Originally by <a href="https://github.com/JeremyGamer13" target="_blank" style="text-decoration: none;">JeremyGamer13</a> and continued by <a href="https://github.com/SCsupercraft" target="_blank" style="text-decoration: none;">SCsupercraft</a>.<br><br> <p>Use the help command for information on how to use the debugger.<p><br>`;
             let inner = `<div style="display: flex; justify-content: space-between; direction: ltr;"><span style="flex-grow: 1; text-align: left;">${message}</span></div>`;
             logElement.innerHTML = inner;
 
