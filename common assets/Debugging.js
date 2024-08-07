@@ -72,25 +72,44 @@ Contributors / Helpers
         }
         return escaped;
     }
-    const DefaultCommandDescriptions = {
-        "help": "List all commands and how to use them.\n\tSpecify a command after to only include that explanation.",
-        "exit": "Closes the debugger.",
-        "clear": "Clears the console.",
-        "start": "Restarts the project like the flag was clicked.",
-        "stop": "Stops the project.",
-        "pause": "Pauses the project.",
-        "resume": "Resumes the project.",
-        "broadcast": "Starts a broadcast by name.\n\tAdd data to specify data to send with the broadcast",
-        "getVar": "Gets the value of a variable by name.\n\tFirst argument is the variables name\n\tAdd a sprite name to specify a variable in a sprite.",
-        "setVar": "Sets the value of a variable by name.\n\tFirst argument is the variables name\n\tSecond argument is the new value\n\tAdd a sprite name to specify a variable in a sprite.",
-        "getList": "Gets the value of a list by name.\n\tReturns an array.\n\tFirst argument is the lists name\n\tAdd a sprite name to specify a list in a sprite.",
-        "setList": "Sets the value of a list by name.\n\tFirst argument is the lists name\n\tSecond argument is the new value\n\tThe list will be set to the array specified.\n\tAdd a sprite name to specify a list in a sprite.",
-        "top": "Scrolls to the top.",
-        "bottom": "Scrolls to the bottom.",
-        "enableDebugMode": "Enables debug mode.\n\tShould only be used if something went VERY VERY wrong!",
-        "disableDebugMode": "Disables debug mode.",
-        "downloadLogs": "Downloads the logs to your computer as a file named \"project.log\".\n\tFirst argument is whether or not to include debug level logs"
-    };
+
+    class Default {
+        constructor() {
+            this.CommandDescriptions = {
+                "help": "List all commands and how to use them.\n\tSpecify a command after to only include that explanation.",
+                "exit": "Closes the debugger.",
+                "clear": "Clears the console.",
+                "start": "Restarts the project like the flag was clicked.",
+                "stop": "Stops the project.",
+                "pause": "Pauses the project.",
+                "resume": "Resumes the project.",
+                "broadcast": "Starts a broadcast by name.\n\tAdd data to specify data to send with the broadcast",
+                "getVar": "Gets the value of a variable by name.\n\tFirst argument is the variables name\n\tAdd a sprite name to specify a variable in a sprite.",
+                "setVar": "Sets the value of a variable by name.\n\tFirst argument is the variables name\n\tSecond argument is the new value\n\tAdd a sprite name to specify a variable in a sprite.",
+                "getList": "Gets the value of a list by name.\n\tReturns an array.\n\tFirst argument is the lists name\n\tAdd a sprite name to specify a list in a sprite.",
+                "setList": "Sets the value of a list by name.\n\tFirst argument is the lists name\n\tSecond argument is the new value\n\tThe list will be set to the array specified.\n\tAdd a sprite name to specify a list in a sprite.",
+                "top": "Scrolls to the top.",
+                "bottom": "Scrolls to the bottom.",
+                "enableDebugMode": "Enables debug mode.\n\tShould only be used if something went VERY VERY wrong!",
+                "disableDebugMode": "Disables debug mode.",
+                "downloadLogs": "Downloads the logs to your computer as a file named \"project.log\".\n\tFirst argument is whether or not to include debug level logs"
+            };
+            this.Colors = {
+                "debug": '#1e90ff',
+                "log": '#ffffff',
+                "warning": '#ffff00',
+                "error": '#ff0000',
+                "fatalError": '#ff0000',
+                "breakpoint": '#5f9ea0',
+                "succeededTest": '#3cb371',
+                "failedTest": '#dc143c',
+                "inputText": '#ffffff',
+                "headerText": '#ffffff',
+                "background": "#000000",
+                "header": "#333333"
+            };
+        }
+    }
 
     const runHats = (opcode) => {
         // https://github.com/surv-is-a-dev/gallery/blob/main/site/extensions/0znzw/tests/runHats%20and%20check%20count.js
@@ -180,10 +199,12 @@ Contributors / Helpers
             this.runtime = runtime;
             this.vm = vm
 
-            this.version = '1.2.0'
+            this.version = '1.3.0'
             this.debuggerShown = false;
 
-            this.CommandDescriptions = DefaultCommandDescriptions
+            this.Default = new Default();
+            this.colors = this.Default.Colors;
+            this.CommandDescriptions = this.Default.CommandDescriptions;
             this.disabledCommands = [];
             this.protectedVariables = [];
             this.protectedLists = [];
@@ -213,7 +234,7 @@ Contributors / Helpers
                 + 'position: absolute; left: 40px; top: 40px;'
                 + 'resize: both; border-radius: 8px;'
                 + 'box-shadow: 0px 0px 10px black; border: 1px solid rgba(0, 0, 0, 0.15);'
-                + 'background: black; font-family: \'Trebuchet MS\', sans-serif;'
+                + `background: ${this.colors.background}; font-family: \'Trebuchet MS\', sans-serif;` // background: black;
                 + 'min-height: 3rem; min-width: 128px; width: 480px; height: 480px;'
                 + 'overflow: hidden; z-index: 1000000;';
 
@@ -221,8 +242,8 @@ Contributors / Helpers
             this.consoleHeader.style = 'width: 100%; height: 2rem;'
                 + 'position: absolute; left: 0px; top: 0px;'
                 + 'display: flex; flex-direction: column; align-items: center;'
-                + 'justify-content: center; color: white; cursor: move;'
-                + 'background: #333333; z-index: 1000001; user-select: none;';
+                + `justify-content: center; ${this.colors.headerText}: white; cursor: move;` // color: white;
+                + `background: ${this.colors.header}; z-index: 1000001; user-select: none;`; // background: #333333;
             this.consoleHeader.innerHTML = `<p>Debugger - Version ${this.version}</p>`;
 
             this.consoleLogs = this.console.appendChild(document.createElement("div"));
@@ -238,22 +259,22 @@ Contributors / Helpers
             this.consoleBar.style = 'width: 100%; height: 1rem;'
                 + 'position: absolute; left: 0px; bottom: 0px;'
                 + 'display: flex; flex-direction: row;'
-                + 'color: white; cursor: text; background: black;'
+                + 'color: white; cursor: text; background: inherit;' // background: black;
                 + 'z-index: 1000001; user-select: none;';
 
             this.consoleBarInput = this.consoleBar.appendChild(document.createElement("input"));
             this.consoleBarInput.style = 'width: calc(100% - 16px); height: 100%;'
                 + 'position: absolute; left: 16px; top: 0px;'
                 + 'border: 0; padding: 0; margin: 0; font-family: \'Trebuchet MS\', sans-serif;'
-                + 'color: white; cursor: text; background: black;'
+                + `color: ${this.colors.inputText}; cursor: text; background: inherit;`  // color: white; background: black;
                 + 'z-index: 1000003; user-select: none; outline: unset !important;';
-            const consoleBarIndicator = this.consoleBar.appendChild(document.createElement("div"));
-            consoleBarIndicator.style = 'width: 16px; height: 100%;'
+            this.consoleBarIndicator = this.consoleBar.appendChild(document.createElement("div"));
+            this.consoleBarIndicator.style = 'width: 16px; height: 100%;'
                 + 'position: absolute; left: 0px; top: 0px;'
-                + 'color: white; cursor: text;'
+                + `color: ${this.colors.inputText}; cursor: text;` // color: white;
                 + 'z-index: 1000002; user-select: none;';
-            consoleBarIndicator.innerHTML = '>';
-            consoleBarIndicator.onclick = () => {
+            this.consoleBarIndicator.innerHTML = '>';
+            this.consoleBarIndicator.onclick = () => {
                 this.consoleBarInput.focus();
             };
             // this.consoleLogs.onclick = () => {
@@ -340,7 +361,9 @@ Contributors / Helpers
 
             this.runtime.on('PROJECT_LOADED', () => {
 
-                this.CommandDescriptions = DefaultCommandDescriptions
+                this.Default = new Default();
+                this.colors = this.Default.Colors;
+                this.CommandDescriptions = this.Default.CommandDescriptions
                 this.disabledCommands = [];
                 this.protectedVariables = [];
                 this.protectedLists = [];
@@ -349,6 +372,11 @@ Contributors / Helpers
                 this.logFile = "";
                 this.debugFile = "";
                 this.clear()
+                this.consoleBarInput.style.color = this.colors.inputText;
+                this.consoleBarIndicator.style.color = this.colors.inputText;
+                this.consoleHeader.style.color = this.colors.headerText;
+                this.consoleHeader.style.background = this.colors.header;
+                this.console.style.background = this.colors.background;
 
                 if (this.initialized === false) {
                     setTimeout(function() {
@@ -659,6 +687,11 @@ Contributors / Helpers
                             }
                         }
                     },
+                    {
+                        opcode: 'resetHelp',
+                        text: 'reset explanations',
+                        blockType: BlockType.COMMAND
+                    },
                     "---",
                     {
                         opcode: 'setCommandEnabled',
@@ -734,6 +767,42 @@ Contributors / Helpers
                               defaultValue: 'my variable'
                             }
                         }
+                    },
+                    {
+                        text: 'Styling',
+                        blockType: BlockType.LABEL
+                    },
+                    {
+                        opcode: 'resetColors',
+                        text: 'reset message colors',
+                        blockType: BlockType.COMMAND
+                    },
+                    {
+                        opcode: 'setColorOf',
+                        text: 'set color of [STYLE_TYPE] to [COLOR]',
+                        blockType: BlockType.COMMAND,
+                        arguments: {
+                            STYLE_TYPE: {
+                                type: ArgumentType.STRING,
+                                menu: 'STYLE_TYPE'
+                            },
+                            COLOR: {
+                                type: ArgumentType.COLOR,
+                                defaultValue: '#ff0000'
+                            }
+                        }
+                    },
+                    {
+                        opcode: 'getColorOf',
+                        text: 'color of [STYLE_TYPE]',
+                        blockType: BlockType.REPORTER,
+                        disableMonitor: true,
+                        arguments: {
+                            STYLE_TYPE: {
+                                type: ArgumentType.STRING,
+                                menu: 'STYLE_TYPE'
+                            }
+                        }
                     }
                 ],
                 menus: {
@@ -765,6 +834,23 @@ Contributors / Helpers
                                 value: "false"
                             }
                         ]
+                    },
+                    STYLE_TYPE: {
+                        acceptReporters: true,
+                        items: [
+                            "debug",
+                            "log",
+                            "warning",
+                            "error",
+                            "fatal error",
+                            "breakpoint",
+                            "succeeded test",
+                            "failed test",
+                            "input text",
+                            "header text",
+                            "header",
+                            "background"
+                        ]
                     }
                 }
             };
@@ -782,8 +868,8 @@ Contributors / Helpers
             if (!name) return [];
             let startedThreads = [];
             target = this._getTargetFromMenu(target);
-            if (data) this._addLog("Broadcasting " + name + " to " + target + " with data " + data, "color: dodgerblue;", true);
-            if (!data) this._addLog("Broadcasting " + name + " to " + target + " with no data", "color: dodgerblue;", true);
+            if (data) this._addLog("Broadcasting " + name + " to " + target + " with data " + data, `color: ${this.colors.debug};`, true); // color: dodgerblue;
+            if (!data) this._addLog("Broadcasting " + name + " to " + target + " with no data", `color: ${this.colors.debug};`, true); // color: dodgerblue;
             if (data) this.debugFile += "DEBUG Broadcasting " + name + " to " + target + " with data " + data + "\n";
             if (!data) this.debugFile += "DEBUG Broadcasting " + name + " to " + target + " with no data" + "\n";
             if (target === undefined) {
@@ -843,10 +929,10 @@ Contributors / Helpers
             }
         }
         _parseCommand(command) {
-            this._addLog("Command entered", "color: dodgerblue;", true);
+            this._addLog("Command entered", `color: ${this.colors.debug};`, true); // color: dodgerblue;
             const rawCommand = Cast.toString(command);
-            this._addLog("Raw command: " + rawCommand, "color: dodgerblue;", true);
-            this._addLog("Split raw command: " + JSON.stringify(rawCommand.split('')), "color: dodgerblue;", true);
+            this._addLog("Raw command: " + rawCommand, `color: ${this.colors.debug};`, true); // color: dodgerblue;
+            this._addLog("Split raw command: " + JSON.stringify(rawCommand.split('')), `color: ${this.colors.debug};`, true); // color: dodgerblue;
             this.debugFile += "DEBUG Command entered" + "\n";
             this.debugFile += "DEBUG Raw command: " + rawCommand + "\n";
             this.debugFile += "DEBUG Split raw command: " + JSON.stringify(rawCommand.split('')) + "\n";
@@ -861,16 +947,16 @@ Contributors / Helpers
             let idx = -1; // idx gets added to at the start since there a bunch of continue statemnets
             for (const letter of rawCommand.split('')) {
                 idx++;
-                this._addLog("index: " + idx, "color: dodgerblue;", true);
+                this._addLog("index: " + idx, `color: ${this.colors.debug};`, true); // color: dodgerblue;
                 this.debugFile += "DEBUG index: " + idx + "\n";
                 if (readingCommand) {
-                    this._addLog("Reading command", "color: dodgerblue;", true);
+                    this._addLog("Reading command", `color: ${this.colors.debug};`, true); // color: dodgerblue;
                     this.debugFile += "DEBUG Reading command" + "\n";
                     if (letter === ' ' || letter === '\t') {
                         if (chunk.length <= 0) {
                             throw new SyntaxError('No command before white-space');
                         }
-                        this._addLog("Command: " + chunk, "color: dodgerblue;", true);
+                        this._addLog("Command: " + chunk, `color: ${this.colors.debug};`, true); // color: dodgerblue;
                         this.debugFile += "DEBUG Command: " + chunk + "\n";
                         data.command = chunk;
                         chunk = '';
@@ -878,22 +964,22 @@ Contributors / Helpers
                         continue;
                     }
                     chunk += letter;
-                    this._addLog("chunk: " + chunk, "color: dodgerblue;", true);
+                    this._addLog("chunk: " + chunk, `color: ${this.colors.debug};`, true); // color: dodgerblue;
                     this.debugFile += "DEBUG chunk: " + chunk + "\n";
                     continue;
                 }
                 // we are reading args
-                this._addLog("Reading arguments", "color: dodgerblue;", true);
+                this._addLog("Reading arguments", `color: ${this.colors.debug};`, true); // color: dodgerblue;
                 this.debugFile += "DEBUG Reading arguments" + "\n";
                 if (!isInString) {
-                    this._addLog("Not in string", "color: dodgerblue;", true);
+                    this._addLog("Not in string", `color: ${this.colors.debug};`, true); // color: dodgerblue;
                     this.debugFile += "DEBUG Not in string" + "\n";
                     if (letter !== '"') {
-                        this._addLog("Character is not \"", "color: dodgerblue;", true);
+                        this._addLog("Character is not \"", `color: ${this.colors.debug};`, true); // color: dodgerblue;
                         this.debugFile += "DEBUG Character is not \"" + "\n";
                         if (letter === ' ' || letter === '\t') {
                             if (justExitedString === false) {
-                                this._addLog("End of argument", "color: dodgerblue;", true);
+                                this._addLog("End of argument", `color: ${this.colors.debug};`, true); // color: dodgerblue;
                                 this.debugFile += "DEBUG End of argument" + "\n";
                                 data.args.push(chunk);
                             }
@@ -902,7 +988,7 @@ Contributors / Helpers
                             continue;
                         }
                         chunk += letter;
-                        this._addLog("chunk: " + chunk, "color: dodgerblue;", true);
+                        this._addLog("chunk: " + chunk, `color: ${this.colors.debug};`, true); // color: dodgerblue;
                         this.debugFile += "DEBUG chunk: " + chunk + "\n";
                         continue;
                     } else {
@@ -910,7 +996,7 @@ Contributors / Helpers
                             // ex: run thing"Hello!"
                             throw new SyntaxError("Cannot prefix string argument");
                         }
-                        this._addLog("Entering string", "color: dodgerblue;", true);
+                        this._addLog("Entering string", `color: ${this.colors.debug};`, true); // color: dodgerblue;
                         this.debugFile += "DEBUG Entering string" + "\n";
                         isInString = true;
                         continue;
@@ -918,10 +1004,10 @@ Contributors / Helpers
                 }
                 // we are inside of a string
                 justExitedString === false
-                this._addLog("Inside of string", "color: dodgerblue;", true);
+                this._addLog("Inside of string", `color: ${this.colors.debug};`, true); // color: dodgerblue;
                 this.debugFile += "DEBUG Inside of string" + "\n";
                 if (letter === '"' && !isEscapedQuote(rawCommand, idx)) {
-                    this._addLog("End of string", "color: dodgerblue;", true);
+                    this._addLog("End of string", `color: ${this.colors.debug};`, true); // color: dodgerblue;
                     this.debugFile += "DEBUG End of string" + "\n";
                     isInString = false;
                     justExitedString = true;
@@ -929,24 +1015,24 @@ Contributors / Helpers
                     chunk = '';
                 } else {
                     chunk += letter;
-                    this._addLog("chunk: " + chunk, "color: dodgerblue;", true);
+                    this._addLog("chunk: " + chunk, `color: ${this.colors.debug};`, true); // color: dodgerblue;
                     this.debugFile += "DEBUG chunk: " + chunk + "\n";
                 }
             }
             // reached end of the command
             if (isInString) throw new SyntaxError('String never terminates in command');
             if (readingCommand && chunk.length > 0) {
-                this._addLog("Command: " + chunk, "color: dodgerblue;", true);
+                this._addLog("Command: " + chunk, `color: ${this.colors.debug};`, true); // color: dodgerblue;
                 this.debugFile += "DEBUG Command: " + chunk + "\n";
                 data.command = chunk;
                 readingCommand = false;
             } else if (chunk.length > 0) {
-                this._addLog("End of argument", "color: dodgerblue;", true);
+                this._addLog("End of argument", `color: ${this.colors.debug};`, true); // color: dodgerblue;
                 this.debugFile += "DEBUG End of argument" + "\n";
                 data.args.push(chunk);
             }
-            this._addLog("End of command", "color: dodgerblue;", true);
-            this._addLog("Args: " + JSON.stringify(data.args), "color: dodgerblue;", true);
+            this._addLog("End of command", `color: ${this.colors.debug};`, true); // color: dodgerblue;
+            this._addLog("Args: " + JSON.stringify(data.args), `color: ${this.colors.debug};`, true); // color: dodgerblue;
             this.debugFile += "DEBUG End of command" + "\n";
             this.debugFile += "DEBUG Args: " + JSON.stringify(data.args) + "\n";
             return data;
@@ -958,13 +1044,13 @@ Contributors / Helpers
             const args = parsedCommand.args;
 
             if (!this.isCommandEnabled({COMMAND: command})) {
-                this._addLog("This command has been disabled by the project!", "color: yellow;");
+                this._addLog("This command has been disabled by the project!", `color: ${this.colors.warning};`); // color: yellow;
                 this.logFile += "WARN This command has been disabled by the project!" + "\n";
                 this.debugFile += "WARN This command has been disabled by the project!" + "\n";
                 return;
             }
 
-            this._addLog("Executing " + command + " with argument(s) " + JSON.stringify(args), "color: dodgerblue;", true);
+            this._addLog("Executing " + command + " with argument(s) " + JSON.stringify(args), `color: ${this.colors.debug};`, true); // color: dodgerblue;
             this.debugFile += "DEBUG " + "Executing " + command + " with argument(s) " + JSON.stringify(args) + "\n";
 
             let customCommandExists = await this.runWhenCommandEntered({COMMAND: command, ARGS: args});
@@ -992,7 +1078,7 @@ Contributors / Helpers
                     for (const commandName in commadnDescriptions) {
                         log += `${commandName} - ${commadnDescriptions[commandName]}\n`;
                     }
-                    this._addLog(log);
+                    this._addLog(log, `color: ${this.colors.log};`); // color: white
                     this.logFile += "INFO " + log + "\n";
                     this.debugFile += "INFO " + log + "\n";
                     break;
@@ -1007,13 +1093,13 @@ Contributors / Helpers
                     try {
                         this.vm.greenFlag()
                         console.log('Started project successfully');
-                        this._addLog('Started project successfully');
+                        this._addLog('Started project successfully', `color: ${this.colors.log};`); // color: white;
                         this.logFile += "INFO Started project successfully" + "\n";
                         this.debugFile += "INFO Started project successfully" + "\n";
                     } catch (e) {
-                        this._addLog(e, "color: red;")
+                        this._addLog(e, `color: ${this.colors.error};`) // color: red;
                         console.log('Failed to start project');
-                        this._addLog('Failed to start project');
+                        this._addLog('Failed to start project', `color: ${this.colors.log};`); // color: white;
                         this.logFile += "ERROR " + Cast.toString(e); + "\n";
                         this.logFile += "INFO Failed to start project"; + "\n";
                         this.debugFile += "ERROR " + Cast.toString(e); + "\n";
@@ -1024,13 +1110,13 @@ Contributors / Helpers
                     try {
                         this.vm.stopAll()
                         console.log('Stopped project successfully');
-                        this._addLog('Stopped project successfully');
+                        this._addLog('Stopped project successfully', `color: ${this.colors.log};`); // color: white;
                         this.logFile += "INFO Stopped project successfully" + "\n";
                         this.debugFile += "INFO Stopped project successfully" + "\n";
                     } catch (e) {
-                        this._addLog(e, "color: red;")
+                        this._addLog(e, `color: ${this.colors.error};`) // color: red;
                         console.log('Failed to stop project');
-                        this._addLog('Failed to stop project');
+                        this._addLog('Failed to stop project', `color: ${this.colors.log};`); // color: white;
                         this.logFile += "ERROR " + Cast.toString(e); + "\n";
                         this.logFile += "INFO Failed to stop project"; + "\n";
                         this.debugFile += "ERROR " + Cast.toString(e); + "\n";
@@ -1041,13 +1127,13 @@ Contributors / Helpers
                     try {
                         this.runtime.pause()
                         console.log('Paused project successfully');
-                        this._addLog('Paused project successfully');
+                        this._addLog('Paused project successfully', `color: ${this.colors.log};`); // color: white;
                         this.logFile += "INFO Paused project successfully" + "\n";
                         this.debugFile += "INFO Paused project successfully" + "\n";
                     } catch (e) {
-                        this._addLog(e, "color: red;")
+                        this._addLog(e, `color: ${this.colors.error};`) // color: red;
                         console.log('Failed to pause project');
-                        this._addLog('Failed to pause project');
+                        this._addLog('Failed to pause project', `color: ${this.colors.log};`); // color: white;
                         this.logFile += "ERROR " + Cast.toString(e) + "\n";
                         this.logFile += "INFO Failed to pause project" + "\n";
                         this.debugFile += "ERROR " + Cast.toString(e) + "\n";
@@ -1058,13 +1144,13 @@ Contributors / Helpers
                     try {
                         this.runtime.play()
                         console.log('Resumed project successfully');
-                        this._addLog('Resumed project successfully');
+                        this._addLog('Resumed project successfully', `color: ${this.colors.log};`); // color: white;
                         this.logFile += "INFO Resumed project successfully" + "\n";
                         this.debugFile += "INFO Resumed project successfully" + "\n";
                     } catch (e) {
-                        this._addLog(e, "color: red;")
+                        this._addLog(e, "color: red;", `color: ${this.colors.error};`) // color: red;
                         console.log('Failed to resume project');
-                        this._addLog('Failed to resume project');
+                        this._addLog('Failed to resume project', `color: ${this.colors.log};`); // color: white;
                         this.logFile += "ERROR " + Cast.toString(e) + "\n";
                         this.logFile += "INFO Failed to resume project" + "\n";
                         this.debugFile += "ERROR " + Cast.toString(e) + "\n";
@@ -1078,7 +1164,7 @@ Contributors / Helpers
                             throw new SyntaxError("No broadcast specified");
                         }
                         if (this.isProtected({VARIABLE: args[0],PROTECTION_TYPE: "Broadcast"})) {
-                            this._addLog("This broadcast is protected!", "color: yellow;");
+                            this._addLog("This broadcast is protected!", `color: ${this.colors.warning};`); // color: yellow;
                             this.logFile += "WARN This broadcast is protected!" + "\n";
                             this.debugFile += "WARN This broadcast is protected!" + "\n";
                             break;
@@ -1086,13 +1172,13 @@ Contributors / Helpers
                         const data = Scratch.Cast.toString(args[1]);
                         this._broadcast(broadcast, '_all_', data)
                         console.log('Broadcasted ' + broadcast + ' successfully');
-                        this._addLog('Broadcasted ' + broadcast + ' successfully');
+                        this._addLog('Broadcasted ' + broadcast + ' successfully', `color: ${this.colors.log};`); // color: white;
                         this.logFile += "INFO Broadcasted " + broadcast + ' successfully' + "\n";
                         this.debugFile += "INFO Broadcasted " + broadcast + ' successfully' + "\n";
                     } catch (e) {
-                        this._addLog(e, "color: red;")
+                        this._addLog(e, `color: ${this.colors.error};`) // color: red;
                         console.log('Failed to broadcast');
-                        this._addLog('Failed to broadcast');
+                        this._addLog('Failed to broadcast', `color: ${this.colors.log};`); // color: white;
                         this.logFile += "ERROR " + Cast.toString(e) + "\n";
                         this.logFile += "INFO Failed to broadcast" + "\n";
                         this.debugFile += "ERROR " + Cast.toString(e) + "\n";
@@ -1102,7 +1188,7 @@ Contributors / Helpers
                 case 'getVar':
                     try {
                         if (this.isProtected({VARIABLE: args[1],PROTECTION_TYPE: "Sprite"})) {
-                            this._addLog("This sprite is protected!", "color: yellow;");
+                            this._addLog("This sprite is protected!", `color: ${this.colors.warning};`); // color: yellow;
                             this.logFile += "WARN This sprite is protected!" + "\n";
                             this.debugFile += "WARN This sprite is protected!" + "\n";
                             break;
@@ -1119,7 +1205,7 @@ Contributors / Helpers
                             throw new ReferenceError("Variable \"" + args[0] + "\" is not defined")
                         }
                         if (this.isProtected({VARIABLE: args[0],PROTECTION_TYPE: "Variable"})) {
-                            this._addLog("This variable is protected!", "color: yellow;");
+                            this._addLog("This variable is protected!", `color: ${this.colors.warning};`); // color: yellow;
                             this.logFile += "WARN This variable is protected!" + "\n";
                             this.debugFile += "WARN This variable is protected!" + "\n";
                             break;
@@ -1127,13 +1213,13 @@ Contributors / Helpers
                         let value = variable ? variable.value : "";
                         let name = variable ? variable.name : "";
                         console.log('Value of ' + name + ' is ' + value);
-                        this._addLog('Value of ' + name + ' is ' + value);
+                        this._addLog('Value of ' + name + ' is ' + value, `color: ${this.colors.log};`); // color: white;
                         this.logFile += "INFO Value of " + name + ' is ' + value + "\n";
                         this.debugFile += "INFO Value of " + name + ' is ' + value + "\n";
                     } catch (e) {
-                        this._addLog(e, "color: red;")
+                        this._addLog(e, `color: ${this.colors.error};`) // color: red;
                         console.log('Failed to get variable');
-                        this._addLog('Failed to get variable');
+                        this._addLog('Failed to get variable', `color: ${this.colors.log};`); // color: white;
                         this.logFile += "ERROR " + Cast.toString(e) + "\n";
                         this.logFile += "INFO Failed to get variable" + "\n";
                         this.debugFile += "ERROR " + Cast.toString(e) + "\n";
@@ -1143,7 +1229,7 @@ Contributors / Helpers
                 case 'setVar':
                     try {
                         if (this.isProtected({VARIABLE: args[2],PROTECTION_TYPE: "Sprite"})) {
-                            this._addLog("This sprite is protected!", "color: yellow;");
+                            this._addLog("This sprite is protected!", `color: ${this.colors.warning};`); // color: yellow;
                             this.logFile += "WARN This sprite is protected!" + "\n";
                             this.debugFile += "WARN This sprite is protected!" + "\n";
                             break;
@@ -1160,7 +1246,7 @@ Contributors / Helpers
                             throw new ReferenceError("Variable \"" + args[0] + "\" is not defined")
                         }
                         if (this.isProtected({VARIABLE: args[0],PROTECTION_TYPE: "Variable"})) {
-                            this._addLog("This variable is protected!", "color: yellow;");
+                            this._addLog("This variable is protected!", `color: ${this.colors.warning};`); // color: yellow;
                             this.logFile += "WARN This variable is protected!" + "\n";
                             this.debugFile += "WARN This variable is protected!" + "\n";
                             break;
@@ -1173,13 +1259,13 @@ Contributors / Helpers
                             );
                         }
                         console.log('Value of ' + variable.name + ' is now ' + variable.value);
-                        this._addLog('Value of ' + variable.name + ' is now ' + variable.value);
+                        this._addLog('Value of ' + variable.name + ' is now ' + variable.value, `color: ${this.colors.log};`); // color: white;
                         this.logFile += "INFO Value of " + variable.name + ' is now ' + variable.value + "\n";
                         this.debugFile += "INFO Value of " + variable.name + ' is now ' + variable.value + "\n";
                     } catch (e) {
-                        this._addLog(e, "color: red;")
+                        this._addLog(e, `color: ${this.colors.error};`) // color: red;
                         console.log('Failed to set variable');
-                        this._addLog('Failed to set variable');
+                        this._addLog('Failed to set variable', `color: ${this.colors.log};`); // color: white;
                         this.logFile += "ERROR " + Cast.toString(e) + "\n";
                         this.logFile += "INFO Failed to set variable" + "\n";
                         this.debugFile += "ERROR " + Cast.toString(e) + "\n";
@@ -1189,7 +1275,7 @@ Contributors / Helpers
                 case 'getList':
                     try {
                         if (this.isProtected({VARIABLE: args[1],PROTECTION_TYPE: "Sprite"})) {
-                            this._addLog("This sprite is protected!", "color: yellow;");
+                            this._addLog("This sprite is protected!", `color: ${this.colors.warning};`); // color: yellow;
                             this.logFile += "WARN This sprite is protected!" + "\n";
                             this.debugFile += "WARN This sprite is protected!" + "\n";
                             break;
@@ -1206,7 +1292,7 @@ Contributors / Helpers
                             throw new ReferenceError("List \"" + args[0] + "\" is not defined")
                         }
                         if (this.isProtected({VARIABLE: args[0],PROTECTION_TYPE: "List"})) {
-                            this._addLog("This list is protected!", "color: yellow;");
+                            this._addLog("This list is protected!", `color: ${this.colors.warning};`); // color: yellow;
                             this.logFile += "WARN This list is protected!" + "\n";
                             this.debugFile += "WARN This list is protected!" + "\n";
                             break;
@@ -1214,13 +1300,13 @@ Contributors / Helpers
                         let value = variable ? JSON.stringify(variable.value) : "";
                         let name = variable ? variable.name : "";
                         console.log('Value of ' + name + ' is ' + value);
-                        this._addLog('Value of ' + name + ' is ' + value);
+                        this._addLog('Value of ' + name + ' is ' + value, `color: ${this.colors.log};`); // color: white;
                         this.logFile += "INFO Value of " + name + ' is ' + value + "\n";
                         this.debugFile += "INFO Value of " + name + ' is ' + value + "\n";
                     } catch (e) {
-                        this._addLog(e, "color: red;")
+                        this._addLog(e, `color: ${this.colors.error};`) // color: red;
                         console.log('Failed to get list');
-                        this._addLog('Failed to get list');
+                        this._addLog('Failed to get list', `color: ${this.colors.log};`); // color: white;
                         this.logFile += "ERROR " + Cast.toString(e) + "\n";
                         this.logFile += "INFO Failed to get list" + "\n";
                         this.debugFile += "ERROR " + Cast.toString(e) + "\n";
@@ -1230,7 +1316,7 @@ Contributors / Helpers
                 case 'setList':
                     try {
                         if (this.isProtected({VARIABLE: args[2],PROTECTION_TYPE: "Sprite"})) {
-                            this._addLog("This sprite is protected!", "color: yellow;");
+                            this._addLog("This sprite is protected!", `color: ${this.colors.warning};`); // color: yellow;
                             this.logFile += "WARN This sprite is protected!" + "\n";
                             this.debugFile += "WARN This sprite is protected!" + "\n";
                             break;
@@ -1247,7 +1333,7 @@ Contributors / Helpers
                             throw new ReferenceError("List \"" + args[0] + "\" is not defined")
                         }
                         if (this.isProtected({VARIABLE: args[0],PROTECTION_TYPE: "List"})) {
-                            this._addLog("This list is protected!", "color: yellow;");
+                            this._addLog("This list is protected!", `color: ${this.colors.warning};`); // color: yellow;
                             this.logFile += "WARN This list is protected!" + "\n";
                             this.debugFile += "WARN This list is protected!" + "\n";
                             break;
@@ -1268,12 +1354,12 @@ Contributors / Helpers
                         variable.value = safeArray;
 
                         console.log('Value of ' + variable.name + ' is now ' + JSON.stringify(variable.value));
-                        this._addLog('Value of ' + variable.name + ' is now ' + JSON.stringify(variable.value));
+                        this._addLog('Value of ' + variable.name + ' is now ' + JSON.stringify(variable.value), `color: ${this.colors.log};`); // color: white;
                         this.logFile += 'INFO Value of ' + variable.name + ' is now ' + JSON.stringify(variable.value) + "\n";
                     } catch (e) {
-                        this._addLog(e, "color: red;")
+                        this._addLog(e, `color: ${this.colors.error};`) // color: red;
                         console.log('Failed to set list');
-                        this._addLog('Failed to set list');
+                        this._addLog('Failed to set list', `color: ${this.colors.log};`); // color: white;
                         this.logFile += "ERROR " + Cast.toString(e) + "\n";
                         this.logFile += "INFO Failed to set list" + "\n";
                         this.debugFile += "ERROR " + Cast.toString(e) + "\n";
@@ -1290,13 +1376,13 @@ Contributors / Helpers
                     try {
                         this.showDebug();
                         console.log('Debug mode enabled');
-                        this._addLog('Debug mode enabled');
+                        this._addLog('Debug mode enabled', `color: ${this.colors.log};`); // color: white;
                         this.logFile += "INFO Debug mode enabled" + "\n";
                         this.debugFile += "INFO Debug mode enabled" + "\n";
                     } catch (e) {
-                        this._addLog(e, "color: red;")
+                        this._addLog(e, `color: ${this.colors.error};`) // color: red;
                         console.log('Failed to enable debug mode');
-                        this._addLog('Failed to enable debug mode');
+                        this._addLog('Failed to enable debug mode', `color: ${this.colors.log};`); // color: white;
                         this.logFile += "ERROR " + Cast.toString(e) + "\n";
                         this.logFile += "INFO Failed to enable debug mode" + "\n";
                         this.debugFile += "ERROR " + Cast.toString(e) + "\n";
@@ -1307,13 +1393,13 @@ Contributors / Helpers
                     try {
                         this.hideDebug();
                         console.log('Debug mode disabled');
-                        this._addLog('Debug mode disabled');
+                        this._addLog('Debug mode disabled', `color: ${this.colors.log};`); // color: white;
                         this.logFile += "INFO Debug mode disabled" + "\n";
                         this.debugFile += "INFO Debug mode disabled" + "\n";
                     } catch (e) {
-                        this._addLog(e, "color: red;")
+                        this._addLog(e, `color: ${this.colors.error};`) // color: red;
                         console.log('Failed to disable debug mode');
-                        this._addLog('Failed to disable debug mode');
+                        this._addLog('Failed to disable debug mode', `color: ${this.colors.log};`); // color: white;
                         this.logFile += "ERROR " + Cast.toString(e) + "\n";
                         this.logFile += "INFO Failed to disable debug mode" + "\n";
                         this.debugFile += "ERROR " + Cast.toString(e) + "\n";
@@ -1330,14 +1416,14 @@ Contributors / Helpers
                 default:
                     if (!customCommandExists) {
                         if (!(command in this.commandSet)) {
-                            this._addLog(`Command "${command}" not found. Check "help" for command list.`, "color: red;");
+                            this._addLog(`Command "${command}" not found. Check "help" for command list.`, `color: ${this.colors.error};`); // color: red;
                             this.logFile += `INFO Command "${command}" not found. Check "help" for command list.` + "\n";
                             break;
                         }
                         try {
                             this.commandSet[command](...args);
                         } catch (err) {
-                            this._addLog(`Error: ${err}`, "color: red;");
+                            this._addLog(`Error: ${err}`, `color: ${this.colors.error};`); // color: red;
                             this.logFile += `ERROR ${err}` + "\n";
                         }
                     }
@@ -1470,20 +1556,20 @@ Contributors / Helpers
         debug({INFO}) {
             const text = Cast.toString(INFO);
             console.log(text);
-            this._addLog(text, "color: dodgerblue;", true);
+            this._addLog(text, `color: ${this.colors.debug};`, true); // color: dodgerblue;
             this.debugFile += "DEBUG " + text + "\n";
         }
         log({INFO}) {
             const text = Cast.toString(INFO);
             console.log(text);
-            this._addLog(text);
+            this._addLog(text, `color: ${this.colors.log};`); // color: white;
             this.logFile += "INFO " + text + "\n";
             this.debugFile += "INFO " + text + "\n";
         }
         warn({INFO}) {
             const text = Cast.toString(INFO);
             console.warn(text);
-            this._addLog(text, "color: yellow;");
+            this._addLog(text, `color: ${this.colors.warning};`); // color: yellow;
             this.logFile += "WARN " + text + "\n";
             this.debugFile += "WARN " + text + "\n";
         }
@@ -1519,7 +1605,7 @@ Contributors / Helpers
             const text = `Error: ${Cast.toString(INFO)}`
                 + `\n${stack.map(text => (`\tat ${text}`)).join("\n")}`;
             console.error(text);
-            this._addLog(text, "color: red;");
+            this._addLog(text, `color: ${this.colors.error};`); // color: red;
             this.logFile += "ERROR " + text + "\n";
             this.debugFile += "ERROR " + text + "\n";
         }
@@ -1556,7 +1642,7 @@ Contributors / Helpers
             const text = `Fatal Error: ${Cast.toString(INFO)}`
                 + `\n${stack.map(text => (`\tat ${text}`)).join("\n")}`;
             console.error(text);
-            this._addLog(text, "color: red;");
+            this._addLog(text, `color: ${this.colors.fatalError};`); // color: red;
             this.logFile += "FATAL " + text + "\n";
             this.debugFile += "FATAL " + text + "\n";
             this.openDebugger()
@@ -1564,7 +1650,7 @@ Contributors / Helpers
         }
         breakPoint() {
             this.openDebugger()
-            this._addLog('The project has paused itself, use the resume command to unpause the project.', "color: cadetblue;");
+            this._addLog('The project has paused itself, use the resume command to unpause the project.', `color: ${this.colors.breakpoint};`); // color: cadetblue;
             this.runtime.pause()
         }
 
@@ -1584,40 +1670,44 @@ Contributors / Helpers
 
         test({TEST,TEST_NAME}) {
             if (TEST) {
-                this._addLog(`Test: ${TEST_NAME} succeeded`, "color: mediumseagreen;")
+                this._addLog(`Test: ${TEST_NAME} succeeded`, `color: ${this.colors.succeededTest};`) // color: mediumseagreen;
             } else {
-                this._addLog(`Test: ${TEST_NAME} failed`, "color: crimson;")
+                this._addLog(`Test: ${TEST_NAME} failed`, `color: ${this.colors.failedTest};`) // color: crimson;
             }
         }
 
         testAndReturn({TEST,TEST_NAME}) {
             if (TEST) {
-                this._addLog(`Test: ${TEST_NAME} succeeded`, "color: mediumseagreen;")
+                this._addLog(`Test: ${TEST_NAME} succeeded`, `color: ${this.colors.succeededTest};`) // color: mediumseagreen;
             } else {
-                this._addLog(`Test: ${TEST_NAME} failed`, "color: crimson;")
+                this._addLog(`Test: ${TEST_NAME} failed`, `color: ${this.colors.failedTest};`) // color: crimson;
             }
             return TEST;
         }
 
         testAndIf({TEST,TEST_NAME}, util) {
             if (TEST) {
-                this._addLog(`Test: ${TEST_NAME} succeeded`, "color: mediumseagreen;")
+                this._addLog(`Test: ${TEST_NAME} succeeded`, `color: ${this.colors.succeededTest};`) // color: mediumseagreen;
                 util.startBranch(1, false);
             } else {
-                this._addLog(`Test: ${TEST_NAME} failed`, "color: crimson;")
+                this._addLog(`Test: ${TEST_NAME} failed`, `color: ${this.colors.failedTest};`) // color: crimson;
             }
         }
 
         testAndIfElse({TEST,TEST_NAME}, util) {
             if (TEST) {
-                this._addLog(`Test: ${TEST_NAME} succeeded`, "color: mediumseagreen;")
+                this._addLog(`Test: ${TEST_NAME} succeeded`, `color: ${this.colors.succeededTest};`) // color: mediumseagreen;
                 util.startBranch(1, false);
             } else {
-                this._addLog(`Test: ${TEST_NAME} failed`, "color: crimson;")
+                this._addLog(`Test: ${TEST_NAME} failed`, `color: ${this.colors.failedTest};`) // color: crimson;
                 util.startBranch(2, false);
             }
         }
 
+        resetHelp() {
+            this.Default = new Default();
+            this.CommandDescriptions = this.Default.CommandDescriptions;
+        }
         setHelp({COMMAND, EXPLANATION}) {
             this.CommandDescriptions[Cast.toString(COMMAND)] = Cast.toString(EXPLANATION);
         }
@@ -1640,66 +1730,164 @@ Contributors / Helpers
         protect({PROTECTION_TYPE,VARIABLE}) {
             let variableProtected = this.isProtected({VARIABLE: VARIABLE, PROTECTION_TYPE: PROTECTION_TYPE})
             if (!variableProtected) {
-                if (PROTECTION_TYPE === "Variable") {
-                    let target = runtime.getTargetForStage()
-                    const variable = target.lookupVariableByNameAndType(
-                        Scratch.Cast.toString(VARIABLE),
-                        ""
-                    );
-                    if (!variable) {
-                        throw new ReferenceError("Variable \"" + VARIABLE + "\" is not defined")
-                    }
-                    this.protectedVariables.push(Cast.toString(VARIABLE))
-                } else if (PROTECTION_TYPE === "List") {
-                    let target = runtime.getTargetForStage()
-                    const variable = target.lookupVariableByNameAndType(
-                        Scratch.Cast.toString(VARIABLE),
-                        "list"
-                    );
-                    if (!variable) {
-                        throw new ReferenceError("List \"" + VARIABLE + "\" is not defined")
-                    }
-                    this.protectedLists.push(Cast.toString(VARIABLE))
-                } else if (PROTECTION_TYPE === "Sprite") {
-                    let target = runtime.getSpriteTargetByName(Cast.toString(VARIABLE));
-                    if (!target) {
-                        throw new ReferenceError("Sprite \"" + VARIABLE + "\" is not defined")
-                    }
-                    this.protectedSprites.push(Cast.toString(VARIABLE))
-                } else if (PROTECTION_TYPE === "Broadcast") {
-                    this.protectedBroadcasts.push(Cast.toString(VARIABLE))
-                } else {
-                    throw new Error("Invalid PROTECTION_TYPE");
+                let target = undefined
+                let variable = undefined
+                switch(PROTECTION_TYPE) {
+                    case 'Variable':
+                        target = runtime.getTargetForStage()
+                        variable = target.lookupVariableByNameAndType(
+                            Scratch.Cast.toString(VARIABLE),
+                            ""
+                        );
+                        if (!variable) {
+                            throw new ReferenceError("Variable \"" + VARIABLE + "\" is not defined")
+                        }
+                        this.protectedVariables.push(Cast.toString(VARIABLE))
+                        break;
+                    case 'List':
+                        target = runtime.getTargetForStage()
+                        variable = target.lookupVariableByNameAndType(
+                            Scratch.Cast.toString(VARIABLE),
+                            "list"
+                        );
+                        if (!variable) {
+                            throw new ReferenceError("List \"" + VARIABLE + "\" is not defined")
+                        }
+                        this.protectedLists.push(Cast.toString(VARIABLE))
+                        break;
+                    case 'Sprite':
+                        target = runtime.getSpriteTargetByName(Cast.toString(VARIABLE));
+                        if (!target) {
+                            throw new ReferenceError("Sprite \"" + VARIABLE + "\" is not defined")
+                        }
+                        this.protectedSprites.push(Cast.toString(VARIABLE))
+                        break;
+                    case 'Broadcast':
+                        this.protectedBroadcasts.push(Cast.toString(VARIABLE))
+                        break;
+                    default:
+                        throw new Error("Invalid PROTECTION_TYPE");
                 }
             }
         }
         unprotect({PROTECTION_TYPE,VARIABLE}) {
             let variableProtected = this.isProtected({VARIABLE: VARIABLE, PROTECTION_TYPE: PROTECTION_TYPE})
             if (variableProtected) {
-                if (PROTECTION_TYPE === "Variable") {
-                    this.protectedVariables.splice(this.protectedVariables.indexOf(Cast.toString(VARIABLE)), 1);
-                } else if (PROTECTION_TYPE === "List") {
-                    this.protectedLists.splice(this.protectedLists.indexOf(Cast.toString(VARIABLE)), 1);
-                } else if (PROTECTION_TYPE === "Sprite") {
-                    this.protectedSprites.splice(this.protectedSprites.indexOf(Cast.toString(VARIABLE)), 1);
-                } else if (PROTECTION_TYPE === "Broadcast") {
-                    this.protectedBroadcasts.splice(this.protectedBroadcasts.indexOf(Cast.toString(VARIABLE)), 1);
-                } else {
-                    throw new Error("Invalid PROTECTION_TYPE");
+                switch(PROTECTION_TYPE) {
+                    case 'Variable':
+                        this.protectedVariables.splice(this.protectedVariables.indexOf(Cast.toString(VARIABLE)), 1);
+                        break;
+                    case 'List':
+                        this.protectedLists.splice(this.protectedLists.indexOf(Cast.toString(VARIABLE)), 1);
+                        break;
+                    case 'Sprite':
+                        this.protectedSprites.splice(this.protectedSprites.indexOf(Cast.toString(VARIABLE)), 1);
+                        break;
+                    case 'Broadcast':
+                        this.protectedBroadcasts.splice(this.protectedBroadcasts.indexOf(Cast.toString(VARIABLE)), 1);
+                        break;
+                    default:
+                        throw new Error("Invalid PROTECTION_TYPE");
                 }
             }
         }
         isProtected({PROTECTION_TYPE,VARIABLE}) {
-            if (PROTECTION_TYPE === "Variable") {
-                return this.protectedVariables.includes(Cast.toString(VARIABLE));
-            } else if (PROTECTION_TYPE === "List") {
-                return this.protectedLists.includes(Cast.toString(VARIABLE));
-            } else if (PROTECTION_TYPE === "Sprite") {
-                return this.protectedSprites.includes(Cast.toString(VARIABLE));
-            } else if (PROTECTION_TYPE === "Broadcast") {
-                return this.protectedBroadcasts.includes(Cast.toString(VARIABLE));
-            } else {
-                throw new Error("Invalid PROTECTION_TYPE");
+            switch(PROTECTION_TYPE) {
+                case 'Variable':
+                    return this.protectedVariables.includes(Cast.toString(VARIABLE));
+                case 'List':
+                    return this.protectedLists.includes(Cast.toString(VARIABLE));
+                case 'Sprite':
+                    return this.protectedSprites.includes(Cast.toString(VARIABLE));
+                case 'Broadcast':
+                    return this.protectedBroadcasts.includes(Cast.toString(VARIABLE));
+                default:
+                    throw new Error("Invalid PROTECTION_TYPE");
+            }
+        }
+
+        resetColors() {
+            this.Default = new Default();
+            this.colors = this.Default.Colors;
+            this.consoleBarInput.style.color = this.colors.inputText;
+            this.consoleBarIndicator.style.color = this.colors.inputText;
+            this.consoleHeader.style.color = this.colors.headerText;
+            this.consoleHeader.style.background = this.colors.header;
+            this.console.style.background = this.colors.background;
+        }
+
+        setColorOf({STYLE_TYPE,COLOR}) {
+            switch(Cast.toString(STYLE_TYPE).toLowerCase()) {
+                case "debug":
+                    this.colors.debug = COLOR;
+                    break;
+                case "log":
+                    this.colors.log = COLOR;
+                    break;
+                case "warning":
+                    this.colors.warning = COLOR;
+                    break;
+                case "error":
+                    this.colors.error = COLOR;
+                    break;
+                case "fatal error":
+                    this.colors.fatalError = COLOR;
+                    break;
+                case "breakpoint":
+                    this.colors.breakpoint = COLOR;
+                    break;
+                case "succeeded test":
+                    this.colors.succeededTest = COLOR;
+                    break;
+                case "failed test":
+                    this.colors.failedTest = COLOR;
+                    break;
+                case "input text":
+                    this.colors.inputText = COLOR;
+                    this.consoleBarInput.style.color = this.colors.inputText;
+                    this.consoleBarIndicator.style.color = this.colors.inputText;
+                    break;
+                case "header text":
+                    this.colors.headerText = COLOR;
+                    this.consoleHeader.style.color = this.colors.headerText;
+                    break;
+                case "header":
+                    this.colors.header = COLOR;
+                    this.consoleHeader.style.background = this.colors.header;
+                    break;
+                case "background":
+                    this.colors.background = COLOR;
+                    this.console.style.background = this.colors.background;
+                    break;
+            }
+        }
+
+        getColorOf({STYLE_TYPE}) {
+            switch(Cast.toString(STYLE_TYPE).toLowerCase()) {
+                case "debug":
+                    return this.colors.debug
+                case "log":
+                    return this.colors.log
+                case "warning":
+                    return this.colors.warning
+                case "error":
+                    return this.colors.error
+                case "fatal error":
+                    return this.colors.fatalError
+                case "breakpoint":
+                    return this.colors.breakpoint
+                case "succeeded test":
+                    return this.colors.succeededTest
+                case "failed test":
+                    return this.colors.failedTest
+                case "input text":
+                    return this.colors.inputText
+                case "header text":
+                    return this.colors.headerText
+                case "header":
+                    return this.colors.header
+                case "background":
+                    return this.colors.background
             }
         }
 
