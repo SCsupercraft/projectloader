@@ -116,7 +116,7 @@ Contributors / Helpers
         const threads = [];
         for (const target of vm.runtime.targets) {
           Object.values(target.blocks._blocks).filter(block => block.opcode === opcode).forEach(block => {
-            threads.push(vm.runtime._pushThread(block.id, target, { stackClick: true }));
+            threads.push(vm.runtime._pushThread(block.id, target, { stackClick: false }));
           });
         }
         return threads;
@@ -199,7 +199,7 @@ Contributors / Helpers
             this.runtime = runtime;
             this.vm = vm
 
-            this.version = '1.3.0'
+            this.version = '1.4.0'
             this.debuggerShown = false;
 
             this.Default = new Default();
@@ -415,6 +415,19 @@ Contributors / Helpers
             logElement.innerHTML = inner;
 
             this.consoleLogs.appendChild(logElement);
+
+            // Here we modify "console.error" so that the debugger can log the errors
+            // I learnt how to do this from looking at SharkPools Runtime Events extension
+            const er = console.error;
+            console.error = function (...args) {
+                const errorToLog = typeof args[0] == "object" ? Cast.toString(args[0]["message"]) : (Cast.toString(args) || "Unknown Error")
+                if (!errorToLog.includes("at block debugging_error") && !errorToLog.includes("at block debugging_fatalError")) {
+                    this._addLog("Uncaught Error: " + errorToLog, `color: ${this.colors.error};`); // color: red;          
+                    this.logFile += "UNCAUGHT ERROR " + errorToLog + "\n";
+                    this.debugFile += "UNCAUGHT ERROR " + errorToLog + "\n";
+                }
+                return er.apply(this, args);
+            }.bind(this)
         }
 
         isPackaged() {
@@ -552,6 +565,17 @@ Contributors / Helpers
                     {
                         text: 'Markers',
                         blockType: BlockType.LABEL
+                    },
+                    {
+                        opcode: 'cloneMarker',
+                        text: 'mark this clone as [MARK]',
+                        blockType: BlockType.COMMAND,
+                        arguments: {
+                            MARK: {
+                                type: ArgumentType.STRING,
+                                defaultValue: "Clone 1"
+                            }
+                        }
                     },
                     {
                         opcode: 'marker',
@@ -774,7 +798,7 @@ Contributors / Helpers
                     },
                     {
                         opcode: 'resetColors',
-                        text: 'reset message colors',
+                        text: 'reset colors',
                         blockType: BlockType.COMMAND
                     },
                     {
@@ -892,7 +916,7 @@ Contributors / Helpers
 
         _addLog(log, style, debug) {
             const isDebug = debug || false;
-            const canScroll = this.can_scroll()
+            const canScroll = this.canScroll()
             const logElement = this.consoleLogs.appendChild(document.createElement("p"));
             this._logs.push(log);
             logElement.style = 'white-space: break-spaces;';
@@ -914,7 +938,7 @@ Contributors / Helpers
             }
         }
         _addImgLog(imageSRC, style) {
-            const canScroll = this.can_scroll()
+            const canScroll = this.canScroll()
             console.log(canScroll);
             const imageElement = this.consoleLogs.appendChild(document.createElement("img"));
             imageElement.src = imageSRC;
@@ -1446,16 +1470,18 @@ Contributors / Helpers
         }
 
         whenCommandEntered({COMMAND}, util) {
-            if (!util.thread.commandData) {
-                thread._resolve();
+            const thread = util.thread;
+            
+            if (thread.stackClick) {
                 return true
             }
-            const thread = util.thread;
-            if (thread.commandData && thread.commandData.COMMAND !== COMMAND) {
-              thread._reject();
-              return false;
+
+            if (!thread.commandData || thread.commandData.COMMAND !== COMMAND) {
+                thread._reject();
+                return false;
             }
             thread._resolve();
+            return true
         }
 
         async runWhenCommandEntered(args) {
@@ -1484,6 +1510,13 @@ Contributors / Helpers
                 console.log('Custom commands found.')
                 return true
             };
+        }
+
+        cloneMarker({MARK}, util) {
+            const clone = util.target;
+            if (!this.isClone(clone)) throw new Error("The main sprite can not be marked!")
+            if (clone.marker) throw new Error("Clone has already been marked!")
+            clone.marker = Scratch.Cast.toString(MARK);
         }
 
         marker({MARK}, util) {
@@ -1595,6 +1628,13 @@ Contributors / Helpers
                 stack.push(`event ${thread.topBlock}`);
             }
             stack.push(`sprite ${target.sprite.name}`);
+            if (target.marker) {
+                stack.push(`clone marked as ${target.marker}`);
+            } else if (!this.isClone(target)) {
+                stack.push(`main sprite`);
+            } else {
+                stack.push(`unmarked clone`)
+            }
             if (thread.marker) {
                 stack.push(`script marked as ${thread.marker}`);
             }
@@ -1632,6 +1672,13 @@ Contributors / Helpers
                 stack.push(`event ${thread.topBlock}`);
             }
             stack.push(`sprite ${target.sprite.name}`);
+            if (target.marker) {
+                stack.push(`clone marked as ${target.marker}`);
+            } else if (!this.isClone(target)) {
+                stack.push(`main sprite`);
+            } else {
+                stack.push(`unmarked clone`)
+            }
             if (thread.marker) {
                 stack.push(`script marked as ${thread.marker}`);
             }
@@ -1891,7 +1938,11 @@ Contributors / Helpers
             }
         }
 
-        can_scroll() {
+        isClone(clone) {
+            return !clone.isOriginal;
+        }
+
+        canScroll() {
             return Math.abs(this.consoleLogs.scrollHeight - this.consoleLogs.clientHeight - this.consoleLogs.scrollTop) <= 1;
         }
     }
